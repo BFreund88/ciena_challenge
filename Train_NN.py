@@ -48,6 +48,7 @@ Optional arguments
   --epoch=<epochs> Specify training epochs
   --lr=<lr> Learning rate for SGD optimizer
   --patience=<patience> Set patience for early stopping
+  --opt=<opt> Chose between Adadelta and Adam optimizer (0 or 1)
 """
 
 if __name__ == '__main__':
@@ -60,6 +61,7 @@ if __name__ == '__main__':
     parser.add_argument('--dropout', help = "Specifies the applied dropout", default=0.05, type=float)
     parser.add_argument('--epochs', help = "Specifies the number of epochs", default=80, type=int)
     parser.add_argument('--patience', help = "Specifies the patience for early stopping", default=5, type=int)
+    parser.add_argument('--opt', help = "Specifies the optimizer used: Adadelta:0 and Adam:1 (default),", default=1, type=bool)
 
     args = parser.parse_args()
     print('Train with hyper parameters:')
@@ -96,13 +98,17 @@ if __name__ == '__main__':
     ada= optimizers.Adadelta(lr=1, rho=0.95, epsilon=None, decay=0.01)
     nadam=keras.optimizers.Nadam(lr=0.002, beta_1=0.9, beta_2=0.999, epsilon=None, schedule_decay=0.004)
 
-    model.compile(loss='mean_squared_error', optimizer=nadam, metrics=['msle','mae'])
+    opt=[ada,nadam]
+
+    model.compile(loss='mean_squared_error', optimizer=opt[args.opt], metrics=['msle','mae'])
     model.summary()
-    model.save("./OutputModel/modelNN_initial.h5")
+    model.save('./OutputModel/'+args.output+'modelNN_initial.h5')
 
     #Define checkpoint to save best performing NN
     #Use early stopping with patience
-    callbacks=[EarlyStopping(monitor='val_loss', patience=args.patience),ModelCheckpoint(filepath='output_NN.h5', monitor='val_loss', verbose=args.v, save_best_only=True)]
+    path='./OutputModel/'+args.output+'output_NN.h5'
+    print('Saving as {}'.format(path))
+    callbacks=[EarlyStopping(monitor='val_loss', patience=args.patience),ModelCheckpoint(filepath=path, monitor='val_loss', verbose=args.v, save_best_only=True)]
 
     #Train Model
     print('Fit Model')
@@ -118,11 +124,11 @@ if __name__ == '__main__':
     #Predict income for test set
     
     #Restores best performing Model and compiles automatically    
-    model = load_model('output_NN.h5')
+    model = load_model('./OutputModel/'+args.output+'output_NN.h5')
     
     #Evaluate model
     print('Evaluate')
     scores = model.evaluate(data_set.X_valid, data_set.y_valid, verbose=1)
     print(scores)
 
-
+    model.save('./OutputBest/'+str(int(np.round(scores[2])))+'_'+args.output+'best_NN.h5')
