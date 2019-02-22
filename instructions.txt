@@ -1,0 +1,29 @@
+Ciena - Data science challenge
+
+# Instructions
+
+The entirety of this test should only take a few hours. We want to see your ability to think creatively with a time constraint, as well as your approach and method to solve this challenge, more than the actual results.
+
+1. Before writing any code, how would you approach this challenge? Create a word document in which you describe in a few short sentences your plan.  
+
+2. Prototype a predictive model for the monthly outcomes Outcome_M[1-12] in your favorite programming language using the supplied data set.
+
+3. In the previously created word document, briefly outlining the steps you took:
+	a. Your hypothesis
+	b. How you tested your hypothesis
+	c. How you improved the model
+
+4. Submit your code with your word document along with instructions to run the code, to dcote@ciena.com. If you have any questions during your test, don't hesitate to send your questions by email.
+
+
+# Data description
+
+Each row in this data set represents a different product.
+
+The first 12 columns (Outcome_M1 through Outcome_M12) contains the monthly online sales for the first 12 months after the product launches.  
+
+Date_1 is the day number the major advertising campaign began and the product launched.  
+
+Date_2 is the day number the product was announced and a pre-release advertising campaign began.
+
+Other columns in the data set are features of the product and the advertising campaign.  Quan_x are quantitative variables and Cat_x are categorical variables. Binary categorical variables are measured as (1) if the product had the feature and (0) if it did not.
