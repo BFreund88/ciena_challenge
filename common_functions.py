@@ -37,5 +37,5 @@ def plot_loss(logs, val_logs, title):
     plt.plot(val_logs, label='valid')
     plt.legend()
     plt.title('Training loss')
-    plt.savefig('./'+title+'.png')
+    plt.savefig('./OutputPlots/'+title+'.png')
     plt.clf()
