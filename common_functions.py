@@ -27,7 +27,8 @@ class dataset:
 def prepare_data(frac_train,frac_valid):
     #Read csv files and prepare them as panda data frames
     data = pd.read_csv('TrainingDataset.csv') 
-    data = data.fillna(-999.)
+    #Remove NaN values from dataset
+    data = data.fillna(-1.)
     #Store the data set in the dataset class
     data_set = dataset(data,frac_train,frac_valid)
     return data_set

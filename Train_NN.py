@@ -1,11 +1,9 @@
 import argparse
 import sys
 import keras
-from keras.utils.np_utils import to_categorical
 from keras.models import Sequential, load_model
 from keras.layers import Dense, Activation, Dropout
 from keras import backend as K
-from keras.optimizers import SGD
 from keras import optimizers
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 import sklearn
@@ -67,7 +65,6 @@ if __name__ == '__main__':
     print('Train with hyper parameters:')
     print(args)
 
-
     #Read data files
     #Set fractions for testing and validation
     print('Read Data Set')
@@ -96,7 +93,7 @@ if __name__ == '__main__':
     #Possible optimizers                               
     sgd = optimizers.SGD(lr=args.lr, decay=1e-6, momentum=0.6, nesterov=True)
     ada= optimizers.Adadelta(lr=1, rho=0.95, epsilon=None, decay=0.01)
-    nadam=keras.optimizers.Nadam(lr=0.002, beta_1=0.9, beta_2=0.999, epsilon=None, schedule_decay=0.004)
+    nadam=optimizers.Nadam(lr=0.002, beta_1=0.9, beta_2=0.999, epsilon=None, schedule_decay=0.004)
 
     opt=[ada,nadam]
 
@@ -121,14 +118,14 @@ if __name__ == '__main__':
     plot_loss(logs.history['loss'],logs.history['val_loss'],args.output+'loss')
     plot_loss(logs.history['mean_absolute_error'],logs.history['val_mean_absolute_error'],args.output+'absolute_error')
 
-    #Predict income for test set
+    #Evaluate performance on validation set
     
     #Restores best performing Model and compiles automatically    
     model = load_model('./OutputModel/'+args.output+'output_NN.h5')
     
     #Evaluate model
     print('Evaluate')
-    scores = model.evaluate(data_set.X_valid, data_set.y_valid, verbose=1)
+    scores = model.evaluate(data_set.X_valid, data_set.y_valid, verbose=args.v)
     print(scores)
 
     #Save model in OutputBest with the total error in the name to identify best performing NN
