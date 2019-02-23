@@ -8,7 +8,7 @@ nest=$(( ( ( RANDOM % 10 )  + 1 ) * 100  ))
 opt=$(( ( RANDOM % 2 ))) 
 depth=$(( ( RANDOM % 5 )  + 1 ))
 early=$(( ( RANDOM % 10 )  + 1 ))
-lr=$(python -c "import random;print(random.uniform(0.005, 0.02))")
+lr=$(python -c "import random;print(random.randint(0, 60)*0.001)")
 
 name=${opt}_${nest}_${depth}_${lr}_${early}_
 
