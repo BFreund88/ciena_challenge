@@ -61,7 +61,7 @@ if __name__ == '__main__':
     parser.add_argument('--dropout', help = "Specifies the applied dropout", default=0.05, type=float)
     parser.add_argument('--epochs', help = "Specifies the number of epochs", default=80, type=int)
     parser.add_argument('--patience', help = "Specifies the patience for early stopping", default=5, type=int)
-    parser.add_argument('--opt', help = "Specifies the optimizer used: Adadelta:0 and Adam:1 (default),", default=1, type=bool)
+    parser.add_argument('--opt', help = "Specifies the optimizer used: Adadelta:0 and Adam:1 (default),", default=1, type=int)
 
     args = parser.parse_args()
     print('Train with hyper parameters:')
@@ -118,8 +118,8 @@ if __name__ == '__main__':
     #Plot loss as a number of epochs
     # list all data in history
     print(logs.history.keys())
-    plot_loss(logs.history['loss'],logs.history['val_loss'],'loss')
-    plot_loss(logs.history['mean_absolute_error'],logs.history['val_mean_absolute_error'],'absolute_error')
+    plot_loss(logs.history['loss'],logs.history['val_loss'],args.output+'loss')
+    plot_loss(logs.history['mean_absolute_error'],logs.history['val_mean_absolute_error'],args.output+'absolute_error')
 
     #Predict income for test set
     
@@ -131,4 +131,5 @@ if __name__ == '__main__':
     scores = model.evaluate(data_set.X_valid, data_set.y_valid, verbose=1)
     print(scores)
 
+    #Save model in OutputBest with the total error in the name to identify best performing NN
     model.save('./OutputBest/'+str(int(np.round(scores[2])))+'_'+args.output+'best_NN.h5')
