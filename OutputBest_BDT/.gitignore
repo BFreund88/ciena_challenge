@@ -2,3 +2,7 @@
 *
 # Except this file
 !.gitignore
+!2813_0_400_5_0.033_7_modelBDT_train.pkl
+!2837_0_400_5_0.046_3_modelBDT_train.pkl 
+
+

@@ -11,7 +11,7 @@ from sklearn.externals import joblib
 from sklearn.ensemble import AdaBoostRegressor, GradientBoostingRegressor
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.multioutput import MultiOutputRegressor
-from sklearn.metrics import mean_absolute_error, mean_squared_error
+from sklearn.metrics import mean_absolute_error, mean_squared_error, mean_squared_log_error
 import numpy as np
 import pandas as pd
 import matplotlib as mpl
@@ -36,6 +36,7 @@ Options:
 Optional arguments
   --v=<verbose> Set verbose level
   --printout=<printout> Prints out a few predictions and true sales values
+  --bagging=<bagging> Average predictions with several NNs
 """
 def feature_ranking_BDT(model,shape):
     importances = model.estimators_[0].feature_importances_
@@ -47,18 +48,7 @@ def feature_ranking_BDT(model,shape):
     for f in range(shape):
         print("%d. feature %d (%f)" % (f + 1, indices[f], importances[indices[f]]))
     #Save feature ranking in text file
-    np.savetxt('Ranking.txt', (indices,importances))
-
-def load_model_BDT(path):
-    #Load best performing BDT
-    listfiles = [f for f in listdir(path) if isfile(join(path, f))]
-    listfiles.sort()
-    if(len(listfiles)>1):
-        model = joblib.load(path+'/'+listfiles[1])
-        print(model)
-        return model
-    else:
-        raise Exception('Directory empty')
+    np.savetxt('Ranking.txt', np.c_[indices,importances[indices]],fmt="%i %f")
 
 def print_prediction(prediction, y_test):
     #Print a few examples of the prediction
@@ -68,24 +58,39 @@ def print_prediction(prediction, y_test):
     print('Compared to the true values')
     print(data_set.y_test)
 
-
-def load_model_NN(path):
+def load_best_model(path,model):
     #Load best performing model
     listfiles = [f for f in listdir(path) if isfile(join(path, f))]
     listfiles.sort()
-    if(listfiles):
-        model = load_model(path+'/'+listfiles[1])
-        model.summary()
+    if(len(listfiles)>1):
+        if model=='NN': 
+            model = load_model(path+'/'+listfiles[1])
+            model.summary()
+        elif model=='BDT': 
+            model = joblib.load(path+'/'+listfiles[1])
+            print(model)
         return model
     else:
         raise Exception('Directory empty')
-    
 
+def load_models_NN(path,bagging):
+    #Load several best performing NN models
+    listfiles = [f for f in listdir(path) if isfile(join(path, f))]
+    listfiles.sort()
+    models = []
+    if(listfiles>bagging):
+        for i in range(bagging):
+            models.append(load_model(path+'/'+listfiles[i+1]))
+        return models
+    else:
+        raise Exception('Not enough models available')
+    
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description = 'MVA evaluation on Test set')
     parser.add_argument("--v", "--verbose", help="increase output verbosity", default=True, type=bool)
     parser.add_argument('--model', help = "Decide between BDT and NN application", type=str, required=True)
     parser.add_argument('--printout', help = "Print out predictions and true sales values", action='store_true')
+    parser.add_argument('--bagging', help = "Average predictions over several NN", default=True, type=int)
 
     args = parser.parse_args()
     print('The following model will be applied on the testing set:')
@@ -105,7 +110,7 @@ if __name__ == '__main__':
     if (args.model == 'BDT'):
         path = 'OutputBest_BDT'
         if (args.v): print('Loading Model from directory {}'.format(path))
-        model = load_model_BDT(path)
+        model = load_best_model(path,'BDT')
 
         #Calculate error on test set and compare to validation error
         pred_val = model.predict(data_set.X_valid)
@@ -125,7 +130,7 @@ if __name__ == '__main__':
     elif (args.model == 'NN'):
         path = 'OutputBest'
         if (args.v): print('Loading Model from directory {}'.format(path))
-        model = load_model_NN(path)
+        model = load_best_model(path,'NN')
         #Calculate error on the validation and test set
         if (args.v): print('Calculate Test score')
         scores_valid = model.evaluate(data_set.X_valid,data_set.y_valid,verbose=args.v)
@@ -135,6 +140,18 @@ if __name__ == '__main__':
 
         #Print out predictions and true labels
         if (args.printout): print_prediction(model.predict(data_set.X_test)[:10,:],data_set.y_test.iloc[:10,:])
-        
+
+        #Average predictions of several NN
+        print('Average NN')
+        if(args.bagging>0): 
+            models  = load_models_NN(path,args.bagging)
+            predictions = np.zeros((data_set.X_test.shape[0],data_set.y_train.shape[1]))
+            for i in models:
+                predictions+=i.predict(data_set.X_test)
+            predictions/=len(models)
+            errors = [mean_squared_error(data_set.y_test, predictions),mean_absolute_error(data_set.y_test, predictions)]
+
+            print('The error on the Test set with an average over {} best performing NNs is: {}'.format(args.bagging,errors))
+
     else:
         raise Exception('Model has to be either NN or BDT')
