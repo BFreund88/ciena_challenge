@@ -39,6 +39,7 @@ Usage:
 Options: 
   -h --help             Show this screen. 
 Optional arguments 
+  --v = <verbose> Set verbose level
   --output =<output>    Specify output name
   --numlayer=<numlayer>     Specify number of hidden layers.
   --numn=<numn> Number of neurons per hidden layer 
@@ -72,15 +73,12 @@ if __name__ == '__main__':
     frac_valid=0.8
     data_set=prepare_data(frac_train,frac_valid)
 
-    #Get input dimensions   
-    shape_train=data_set.X_train.shape
-    print('Input Shape: {}'.format(shape_train))
-    shape_valid=data_set.X_valid.shape
-    shape_test=data_set.X_test.shape 
+    #Print input dimensions   
+    print('Input Shape: {}'.format(data_set.shape_train))
 
-    num_train=shape_train[0]
-    num_valid=shape_valid[0]
-    num_test=shape_test[0]                           
+    num_train=data_set.shape_train[0]
+    num_valid=data_set.shape_valid[0]
+    num_test=data_set.shape_test[0]                           
 
     num_tot=num_train+num_valid+num_test    
 
@@ -88,7 +86,7 @@ if __name__ == '__main__':
 
     #Define Keras NN model with given hyper parameters
 
-    model=KerasModel(shape_train[1],args.numlayer,args.numn,args.dropout)
+    model=KerasModel(data_set.shape_train[1],args.numlayer,args.numn,args.dropout)
 
     #Possible optimizers                               
     sgd = optimizers.SGD(lr=args.lr, decay=1e-6, momentum=0.6, nesterov=True)
@@ -128,5 +126,5 @@ if __name__ == '__main__':
     scores = model.evaluate(data_set.X_valid, data_set.y_valid, verbose=args.v)
     print(scores)
 
-    #Save model in OutputBest with the total error in the name to identify best performing NN
+    #Save model in OutputBest with the mean absolute error in the name to identify best performing NN
     model.save('./OutputBest/'+str(int(np.round(scores[2])))+'_'+args.output+'best_NN.h5')

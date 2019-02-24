@@ -24,6 +24,11 @@ class dataset:
         self.X_train_full, self.X_test, self.y_train_full, self.y_test = train_test_split(x_full, y_full,test_size=0.2, random_state=seed)
         self.X_train, self.X_valid, self.y_train, self.y_valid = train_test_split(self.X_train_full, self.y_train_full,test_size=0.2, random_state=seed)
 
+        #Save shape of the train validation and test sample
+        self.shape_train = self.X_train.shape
+        self.shape_valid = self.X_valid.shape
+        self.shape_test = self.X_test.shape
+
 def prepare_data(frac_train,frac_valid):
     #Read csv files and prepare them as panda data frames
     data = pd.read_csv('TrainingDataset.csv') 

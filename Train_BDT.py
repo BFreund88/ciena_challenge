@@ -6,7 +6,7 @@ from sklearn.externals import joblib
 from sklearn.ensemble import AdaBoostRegressor, GradientBoostingRegressor
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.multioutput import MultiOutputRegressor
-from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import mean_absolute_error, mean_squared_error
 import numpy as np
 import pandas as pd
 import matplotlib as mpl
@@ -71,22 +71,19 @@ if __name__ == '__main__':
     frac_valid=0.8
     data_set=prepare_data(frac_train,frac_valid)
 
-    #Get input dimensions   
-    shape_train=data_set.X_train.shape
-    print('Input Shape: {}'.format(shape_train))
-    shape_valid=data_set.X_valid.shape
-    shape_test=data_set.X_test.shape 
+    #Print input dimensions   
+    print('Input Shape: {}'.format(data_set.shape_train))
 
-    num_train=shape_train[0]
-    num_valid=shape_valid[0]
-    num_test=shape_test[0]                           
+    #Show number of events in each category
+    num_train=data_set.shape_train[0]
+    num_valid=data_set.shape_valid[0]
+    num_test=data_set.shape_test[0]                           
 
     num_tot=num_train+num_valid+num_test    
 
     print('Number of training: {}, validation: {}, test: {} and total events: {}.'.format(num_train,num_valid,num_test,num_tot))
 
     #Define Ensemble models with given hyper parameters
-
     modelada=BDTada(args.depth,args.lr,args.nest)
     modelboost=BDTModelgrad(args.depth,args.lr,args.nest,args.v,args.early)
 
@@ -102,11 +99,12 @@ if __name__ == '__main__':
 
     #Prediction
     pred_val = opt[args.opt].predict(data_set.X_valid)
-    #Calculate mean absolute error
-    error = mean_absolute_error(data_set.y_valid, pred_val, multioutput='uniform_average')
-    print(np.round(error))
+    #Calculate mean absolute and squared error on validation set
+    absolute_error = mean_absolute_error(data_set.y_valid, pred_val, multioutput='uniform_average')
+    square_error = mean_squared_error(data_set.y_valid, pred_val, multioutput='uniform_average')
+    print('Mean squared: {} and absolute error: {}'.format(np.round(square_error), np.round(absolute_error)))
 
+    #Save model with mean absolute error in name to select best model
     print("Save Model")
-
-    filenameBDT = './OutputBest_BDT/'+str(int(np.round(error)))+'_'+args.output+'modelBDT_train.pkl'
+    filenameBDT = './OutputBest_BDT/'+str(int(np.round(absolute_error)))+'_'+args.output+'modelBDT_train.pkl'
     _ = joblib.dump(opt[args.opt], filenameBDT, compress=9)

@@ -4,7 +4,7 @@
 . /cvmfs/atlas.cern.ch/repo/ATLASLocalRootBase/user/atlasLocalSetup.sh
 . $ATLAS_LOCAL_ROOT_BASE/packageSetups/localSetup.sh "root 6.14.04-x86_64-slc6-gcc62-opt"
 
-nest=$(( ( ( RANDOM % 10 )  + 1 ) * 100  ))
+nest=$(( ( ( RANDOM % 20 )  + 1 ) * 100  ))
 opt=$(( ( RANDOM % 2 ))) 
 depth=$(( ( RANDOM % 5 )  + 1 ))
 early=$(( ( RANDOM % 10 )  + 1 ))
