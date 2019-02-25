@@ -1,8 +1,9 @@
 Ciena - Data science challenge
 
-In this challenge a data set is given which show the monthly online sales for the first 12 months after 
-the product launches for various products. Apart from the sales numbers it contains various features 
-like the date the ad campaign was launched etc. This code trains NN and BDT models on the training sets, 
+In this challenge a data set is given which show the monthly online sales for 
+the first 12 months after the product launches for various products. Apart from 
+the sales numbers it contains various features like the date the ad campaign was
+launched etc. This code trains NN and BDT models on the training sets, 
 performs hyper parameter optimization and calculate the generalization error.
 
 In order to run the code, the following packages need to be installed:
@@ -19,29 +20,34 @@ usage: python2 Train_NN.py [-h] [--v V] [--output OUTPUT] [--numlayer NUMLAYER]
                    [--numn NUMN] [--lr LR] [--dropout DROPOUT]
                    [--epochs EPOCHS] [--patience PATIENCE] [--opt OPT]
 
-Trains the NN on the training set. Various hyper-parameters can be specified via arguments (number of 
-hidden layers etc.). Logs are stored in the submit/ folder. Control plots (e.g. training loss) are 
-produced and stored in the OutputPlot/ folder. The model is continuesly saved in the OutputModel/ folder 
-as long as the validation loss decreases (with patience specified). Once the training is completed, the 
-model is saved in the OutputBest/ folder with the name specified by the OUTPUT argument for later usage.
+Trains the NN on the training set. Various hyper-parameters can be specified via
+arguments (number of hidden layers etc.). Logs are stored in the submit/ folder. 
+Control plots (e.g. training loss) are produced and stored in the OutputPlot/ 
+folder. The model is continuesly saved in the OutputModel/ folder as long as the
+validation loss decreases (with patience specified). Once the training is 
+completed, the model is saved in the OutputBest/ folder with the name specified 
+by the OUTPUT argument for later usage.
 
 Train_BDT.py
 
 usage: python2 Train_BDT.py [-h] [--v V] [--output OUTPUT] [--depth DEPTH]
                     [--nest NEST] [--lr LR] [--early EARLY] [--opt OPT]
 
-Trains the BDTs on the training set. Various hyper-parameters can be specified via arguments. Logs are 
-stored in the submit/ folder. Once the training is completed, the model is saved in the OutputBest/ 
-folder with the name specified by the OUTPUT argument for later usage.
+Trains the BDTs on the training set. Various hyper-parameters can be specified 
+via arguments. Logs are stored in the submit/ folder. Once the training is 
+completed, the model is saved in the OutputBest/ folder with the name specified 
+by the OUTPUT argument for later usage.
 
 common_functions.py
-Contains functions used by all programs and the data_set class used to store the data set.
+Contains functions used by all programs and the data_set class used to store the
+data set.
 
 launch.sh 
 
 batch script for random hyper parameter optimization in batch mode for NN.
-Samples are saved in the format {MAE}_{Optimizer used (AdaDelta(0) or Adam(1))}_{Number of hidden layers}
-_{Number of neurons per layer}_{fraction of applied dropout}_{Patience}_best_NN.h5
+Samples are saved in the format {MAE}_{Optimizer used (AdaDelta(0) or Adam(1))}
+_{Number of hidden layers}_{Number of neurons per layer}
+_{fraction of applied dropout}_{Patience}_best_NN.h5
 
 submit.sh
 
@@ -50,8 +56,9 @@ Launches NN training jobs in batch mode using qsub.
 launch_BDT.sh 
 
 batch script for random hyper parameter optimization in batch mode for BDT.
-Samples are saved in the format {MAE}_{Optimizer used (Ada(0) or GDR(1))}_{Number of estimators}_
-{Maximum Depth}_{Learning rate}_{Patience}_modelBDT_train.pkl
+Samples are saved in the format {MAE}_{Optimizer used (Ada(0) or GDR(1))}
+_{Number of estimators}_{Maximum Depth}_{Learning rate}_{Patience}
+_modelBDT_train.pkl
 
 submit_BDT.sh
 
@@ -62,7 +69,7 @@ Apply_MVA.py
 usage: Apply_MVA.py [-h] [--v V] --model MODEL [--printout]
                     [--bagging BAGGING]
 
-Computes MAE of performing BDT or NN on test set. Printout argument prints out a few predictions 
-of the model and compares them with the true sales values. Bagging allows to average over a 
-specified number of best performing NNs. Saves a ranking of most important features used in 
-BDT training in Ranking.txt.
+Computes MAE of bestperforming BDT or NN on test set. Printout argument prints 
+out a few predictions of the model and compares them with the true sales values.
+Bagging allows to average over a specified number of best performing NNs. Saves 
+a ranking of most important features used in BDT training in Ranking.txt.
