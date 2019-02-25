@@ -64,4 +64,5 @@ usage: Apply_MVA.py [-h] [--v V] --model MODEL [--printout]
 
 Computes MAE of performing BDT or NN on test set. Printout argument prints out a few predictions 
 of the model and compares them with the true sales values. Bagging allows to average over a 
-specified number of best performing NNs.
+specified number of best performing NNs. Saves a ranking of most important features used in 
+BDT training in Ranking.txt.
